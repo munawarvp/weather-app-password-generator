@@ -5,6 +5,10 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { BASE_URL } from '../config';
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom';
+import { IoIosCloseCircle } from 'react-icons/io'
+import { BiCopy } from 'react-icons/bi'
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { MdOutlineDownloadDone } from 'react-icons/md';
 
 const validationSchema = Yup.object({
     username: Yup.string().min(6).required('Username is required..!'),
@@ -19,6 +23,8 @@ const validationSchema = Yup.object({
 function Register() {
 
     const [suggested_password, setPassword] = useState('')
+    const [toggle, setToggle] = useState(false)
+    const [copied, setCopied] = useState(false)
     const navigate = useNavigate()
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -30,10 +36,8 @@ function Register() {
     },[suggested_password])
 
     async function onSubmit(data) {
-        console.log(data);
         
         const response = await axios.post(`${BASE_URL}/account/register/`, data)
-        console.log(response);
         if(response.status===201){
             navigate('/login')
         }else{
@@ -43,8 +47,8 @@ function Register() {
 
     async function generatePassword() {
         const response = await axios.get(`${BASE_URL}/account/generate-pass/`)
-        console.log(response.data);
         setPassword(response.data.pass)
+        setToggle(true)
     }
 
   return (
@@ -84,7 +88,7 @@ function Register() {
                 </div>
                 <div className='mb-4 flex flex-col place-items-center'>
                     <input className='h-9 w-1/2 p-2 rounded-sm' name='password' type="text" placeholder='password'
-                        defaultValue={suggested_password}
+                        
                         onChange={(e) => {setPassword(e.target.value)}}
                         {...register('password')}
                     />
@@ -93,6 +97,18 @@ function Register() {
                         {errors.password && <div className='text-white cursor-pointer' onClick={generatePassword}>Generate Password</div>}
                         
                     </div>
+                    {toggle && <div className='w-1/2 p-3 mt-2 flex place-content-between text-black bg-slate-300'>
+                        <div className='flex gap-4 place-items-center'>
+                            <h1>{suggested_password}</h1>
+                            <CopyToClipboard text={suggested_password}>
+                                {copied ? <MdOutlineDownloadDone size={25} color='green'/> :
+                                <BiCopy className='hover:bg-slate-400 p-1 rounded-lg' onClick={()=>setCopied(!copied)} size={25}/>}
+                            </CopyToClipboard>
+                            
+                        </div>
+                            
+                            <IoIosCloseCircle onClick={()=>setToggle(!toggle)} size={20}/>
+                    </div>}
                 </div>
                 <div className='mb-4 flex flex-col place-items-center'>
                     <input className='h-9 w-1/2 p-2 rounded-sm' name='confirm_pass' type="text" placeholder='confirm password'

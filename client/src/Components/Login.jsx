@@ -12,8 +12,6 @@ const validationSchema = Yup.object({
 })
 
 function Register() {
-
-
     const navigate = useNavigate()
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -25,10 +23,8 @@ function Register() {
     },[])
 
     async function onSubmit(data) {
-        console.log(data);
         try{
           const response = await axios.post(`${BASE_URL}/account/login-user/`, data)
-          console.log(response);
           if(response.status===200){
               localStorage.setItem('user_id', response.data.user)
               navigate('/')

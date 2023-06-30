@@ -6,6 +6,7 @@ from .serializers import UserModelSerializer
 from .models import UserModel
 import random
 import string
+
 # Create your views here.
 
 class GenerateRandomPass(APIView):
